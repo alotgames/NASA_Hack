@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to HTML Table</title>
+</head>
+<body>
+<button> </button>
+<h1>Users Table</h1>
+<div id="table-container"></div>
+
+<script>
+    function fetchJSONData() {
+        fetch("https://data.nasa.gov/resource/b67r-rgxc.json")
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! Status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then((data) => {
+                generateTable(data); // Pass the fetched data to generateTable
+            })
+            .catch((error) => {
+                console.error("Unable to fetch data:", error);
+            });
+    }
+
+    function generateTable(data) {
+        // Create a table element
+        let table = document.createElement("table");
+        table.border = 1;
+
+        // Create the table header row
+        let headerRow = table.insertRow();
+        let headers = Object.keys(data[0]); // Get the keys from the first object as headers
+        headers.forEach(header => {
+            let th = document.createElement("th");
+            th.innerText = header.charAt(0).toUpperCase() + header.slice(1); // Capitalize the header
+            headerRow.appendChild(th);
+        });
+
+        // Create rows for each data entry
+        data.forEach(item => {
+            let row = table.insertRow();
+            headers.forEach(header => {
+                let cell = row.insertCell();
+                cell.innerText = item[header]; // Insert the data into the cell
+            });
+        });
+
+        // Append the table to the container div
+        document.getElementById("table-container").appendChild(table);
+    }
+
+    // Call the function to fetch data and generate the table
+    fetchJSONData(); // Start fetching the data
+</script>
+</body>
+</html>
