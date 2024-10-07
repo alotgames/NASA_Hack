@@ -1,0 +1,555 @@
+
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale:1">
+<!DOCTYPE html>
+<html lang="EN-CA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbit NEO Project</title>
+</head>
+
+<style src="fuck you.css"></style>
+
+<style> 
+    /* canvas/map styling */
+    canvas {
+        border-color: white 1px;
+        display: block;
+        margin-top:20px;
+        margin-left: auto;
+        margin-right: auto;
+	    background-color: #000000
+    }
+    #canvasControl div{
+        margin:auto;
+        background-color: #26489a;
+    }
+
+    /* drop down menu */
+
+    fuck you.cssfuck you.cssbody{
+        font-family: Helvetica, sans-serif;
+        background: #23242a;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .button {
+        background-color: #01075b; /* Green */
+        border: none;
+        color: white;
+        padding: 15px 320px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+    .dropdown{
+        min-width: 15em;
+        position: relative;
+        margin: 2em;
+    }
+
+    .dropdown * {
+        box-sizing: border-box;
+    }
+
+    .select{
+        background: #2a2f3b;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 2px #2a2f3b solid;
+        border-radius: 0.5em;
+        padding: 1em;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .select-clicked{
+        border: 2px #26489a solid;
+        box-shadow: 0 0 0.8em #26489a;
+    }
+    .select:hover{
+        background: #323741;
+    }
+
+    .caret{
+        width: 0;
+        height: 0;
+        border-left: spx solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 6px solid #fff;
+        transition: 0.3s;
+    }
+
+    .caret-rotate{
+        transform: rotate(180deg); 
+    }
+
+    .menu{
+        list-style: none;
+        padding: 0.2em 0.5em;
+        background: #323741;
+        border:1px #363a43 solid;
+        box-shadow: 0 0.5em 1em rgba(0,0,0,0.2);
+        border-radius:0.5em;
+        color: #9fa5b5;
+        position: absolute;
+        top: 3em;
+        left: 50%;
+        width: 100%;
+        transform: translateX(-50%);
+        opacity: 0;
+        display: none;
+        transition: 0.2s;
+        z-index: 1;
+    }
+
+    .menu li{
+        padding: 0.7em 0.5em;
+        margin: 0.3em 0;
+        border-radius: 0.5em;
+        cursor: pointer;
+    }
+
+    .menu li:hover{
+        background: #2a2d35;
+    }
+
+    .active{
+        background: #23242a;
+    }
+
+    .menu-open{
+        display: block;
+        opacity: 1;
+    }
+
+    /*------ Universal scrollbar --------*/
+
+    ;; ::-webkit-scrollbar{
+        width: 15px;
+    }
+
+    ;; ::-webkit-scrollbar-track{
+        /*The background color for the scrollbar*/
+        background: #d1e5ff;
+    }
+
+    ;; ::-webkit-scrollbar-thumb{
+        /* The actual scrolling bar color*/
+        background: linear-gradient(#0A0A0A,#642bff,#FFFFFF, #ff22e6, #0A0A0A);
+        border-radius: 10px;
+    }
+
+    ;; ::-webkit-scroll-thumb:hover{
+        opacity: 50%;
+    }
+
+    /*Adds support for firefox and other search engines*/
+    @supports (scrollbar-color: red blue){
+        * {
+            scrollbar-color: #d1e5ff #642bff;
+            scrollbar-width: auto;
+        }
+    }
+
+    html,body{
+        display: grid;
+        height: 100%;
+        text-align: center;
+        place-items: center;
+    }
+
+.range{
+    height: 80px;
+    width: 380px;
+}
+
+.range .sliderValue{
+    position: relative;
+    width: 100%;
+}
+
+.range .sliderValue span{
+    position: absolute;
+    height: 45px;
+    width: 45px;
+    color: #fff;
+    font-weight: 500;
+    top: -40px;
+    transform: translateX(-50) scale(0);
+    transform-origin: bottom; 
+    transition: transform 0.3s ease-in-out;
+    line-height: 45px;
+    z-index: 2;
+}
+
+.range .sliderValue span.show{
+    transform: translateX(-50%) scale(1);
+}
+
+.range .sliderValue span:after{
+    position: absolute;
+    content:"";
+    height: 45px;
+    width: 45px;
+    background: #664AFF;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    border: 3px solid #fff;
+    z-index: -1;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+}
+
+.range .field{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.range .field .value{
+    position: absolute;
+    font-size: 18px;
+    font-weight: 600px;
+    color: #664AFF;
+
+}
+
+.range .field .value.left{
+    left: -22px;
+}
+
+.range .field .value.right{
+    right: -43px;
+}
+
+.range .field input{
+    -webkit-appearance: none;
+    height: 3px;
+    width: 100%;
+    background: #ddd;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+}
+
+.range .field input::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    background: #000000;
+    border-radius: 50%;
+    border: 1px solid #000000;
+    cursor: pointer;
+}
+
+.range .field input::-moz-range-progress{
+    background: #664AFF /*for firefox support*/
+}
+
+</style>
+
+<script>
+    const slideValue = document.querySelector(".sliderValue span");
+        const inputSlider = document.querySelector("input[type='range']");
+            
+        inputSlider.oninput = (()=>{
+            let value = inputSlider.value;
+            slideValue.textContent = value;
+            slideValue.style.left =(value/5) + "%"; 
+            slideValue.classList.add("show");
+        });
+        inputSlider.onblur = (()=>{
+            slideValue.classList.remove("show");
+        });
+</script>
+
+<script>
+
+    function fetchJSONData() {
+        fetch("https://data.nasa.gov/resource/b67r-rgxc.json")
+        .then((res) => {        
+            return res.json();
+        })
+        .then((data) => {
+            generateTable(data); // Pass the fetched data to generateTable
+        })
+        .catch((error) => {
+            console.error("Unable to fetch data:", error);
+        });    
+        // delete function to be implemented
+    }
+    
+    function generateTable(data) {
+
+
+         // Check if a table already exists
+        const existingTable = document.getElementById("table-container").querySelector("table");
+    
+    if (existingTable) {
+        // If a table exists, remove it
+        document.getElementById("table-container").removeChild(existingTable);
+        return; // Exit the function
+    }
+
+        // Create a table element
+
+        let table = document.createElement("table");
+        table.border = 1;
+
+        // Create the table header row
+        let headerRow = table.insertRow();
+        let headers = Object.keys(data[0]); // Get the categories
+        
+        headers.forEach (
+            header => {
+                let th = document.createElement("th");                    
+                th.innerText = header.charAt(0).toUpperCase() + header.slice(1); // Capitalize the header
+                headerRow.appendChild(th);
+            }
+        );
+
+        // Create rows for each data entry
+        data.forEach (
+            item => {
+                let row = table.insertRow();
+                headers.forEach (
+                    header => {
+                        let cell = row.insertCell();
+                        cell.innerText = item[header]; // Insert the data into the cell                        }
+                    }
+                );
+            }
+        );
+        // Append the table to the containe r div
+        document.getElementById("table-container").appendChild(table);
+    }
+
+    // Call the function to fetch data and generate the table
+    // Start fetching the data
+    
+    //Get data from big table
+    const JSONData= async () => {
+        try{res = await fetch("https://data.nasa.gov/resource/b67r-rgxc.json");
+        data = await res.json();
+        return data;
+
+
+
+    }
+    catch(error){
+        console.log(error);
+}    }
+
+    
+    
+    
+    
+    
+</script>
+
+
+<body>
+    <h1>Orbit NEO project</h1>
+    
+    <canvas id="orbitCanvas" width="1000" height="1000"></canvas>
+    
+    
+
+    <!--timeSlider-->
+    <div class="range">
+        <div class="sliderValue">
+            <label for="zoom">Time(In years):
+            </label>
+        <span id = "fakeTime">100</span>
+        </div>
+        <div class="field">
+            <div class="value left">0</div>
+            <input type="range" id = "time" min="0" max="500" value="100" steps="1">
+            <div class="value right">500</div>
+        </div>
+    </div>
+    <script>
+
+function sliderUpdate(){
+document.getElementById("time").addEventListener("input", function(){
+document.getElementById("fakeTime").innerText = this.value;
+});
+}
+
+setInterval(sliderUpdate, 100);
+
+    </script>
+
+    <!-- Zoom in/out -->
+    <label for="zoom">Zoom Level: </label>
+    <input type="range" id="zoom" value="100" min="1" max="300" step="1">
+    <span id="zoomValue">100%</span><br>
+    
+    <h1>Comet Information Table</h1>
+    <span class ="button"><button onclick="fetchJSONData()">Table</button></span></span>
+    
+    <div id="table-container"></div>
+    
+</body>
+
+<!--KEEP THIS STUPID SCRIPT DOWN HERE-->
+
+
+<script>
+       
+let elapsedTime = 0; // Variable to keep track of elapsed time
+
+async function useData() {
+    const comets = await JSONData(); // Fetch the latest comet data
+    const canvas = document.getElementById("orbitCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Redraw all comets
+    comets.forEach(comet => {
+        const e = parseFloat(comet.e);
+        const i_deg = parseFloat(comet.i_deg);
+        const w_deg = parseFloat(comet.w_deg);
+        const q_au_1 = parseFloat(comet.q_au_1);
+        const p_yr = parseFloat(comet.p_yr);
+        const tp_tdb = parseFloat(comet.tp_tdb);
+        const epoch_tdb = parseFloat(comet.epoch_tdb);
+
+        drawOrbit(e, i_deg, w_deg, p_yr, q_au_1, tp_tdb, epoch_tdb);
+        
+    });
+}
+
+
+
+
+function drawOrbit(e, i_deg, w_deg, p_yr, q_au_1, tp_tdb, epoch_tdb) {
+    const canvas = document.getElementById("orbitCanvas");
+    const ctx = canvas.getContext("2d");
+   
+    const zoom = parseFloat(document.getElementById("zoom").value) / 100; // Zoom factor
+    const time = parseFloat(document.getElementById("time").value);
+    // Calculate semi-major axis (a) using q = a(1 - e)
+    const a = q_au_1 / (1 - e);
+
+    // Convert degrees to radians
+    const i = i_deg * (Math.PI / 180);
+    const w = w_deg * (Math.PI / 180);
+
+    // Calculate mean motion (n)
+    const meanMotion = (2 * Math.PI) / (p_yr * 365.25 * 24 * 3600); // Mean motion in radians/second
+
+    // Calculate elapsed time from periapsis
+    elapsedTime = (tp_tdb - epoch_tdb) * 86400 + (Date.now() / 1000) % (p_yr * 365.25 * 24 * 3600); // Convert days to seconds
+    
+    // Calculate Mean Anomaly (M)
+    let M = meanMotion * elapsedTime * time; // Mean Anomaly in radians
+    M = M % (2 * Math.PI); // Normalize Mean Anomaly
+
+    // Calculate Eccentric Anomaly (E) using Kepler's equation
+    let E = M; // Initial guess
+    const tolerance = 1e-6; // Convergence tolerance
+    let delta;
+
+    // Iteratively solve for E
+    do {
+        delta = E - e * Math.sin(E) - M;
+        E -= delta / (1 - e * Math.cos(E)); // Newton-Raphson method
+    } while (Math.abs(delta) > tolerance);
+
+    // Calculate the true anomaly (ν) from E
+    const nu = 2 * Math.atan(Math.sqrt((1 + e) / (1 - e)) * Math.tan(E / 2));
+
+    // Center of the canvas
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    // Calculate points on the orbit
+    const points = [];
+    const numPoints = 100; // Number of points to plot
+
+    for (let j = 0; j < numPoints; j++) {
+        // True anomaly from 0 to 2*PI
+        const nuOrbit = (2 * Math.PI / numPoints) * j;
+
+        // Calculate distance from the focus
+        const r = a * (1 - e * e) / (1 + e * Math.cos(nuOrbit));
+
+        // Convert to Cartesian coordinates
+        const x = r * Math.cos(nuOrbit);
+        const y = r * Math.sin(nuOrbit);
+
+        // Rotate by argument of periapsis and account for inclination
+        const x_rotated = (x * Math.cos(w) - y * Math.sin(w));
+        const y_rotated = (x * Math.sin(w) + y * Math.cos(w)) * Math.cos(i);
+
+        // Store points for drawing
+        points.push({ x: centerX + x_rotated * 100 * zoom, y: centerY - y_rotated * 100 * zoom });
+    }
+
+    // Draw the orbit
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (const point of points) {
+        ctx.lineTo(point.x, point.y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = "blue";
+    ctx.stroke();
+
+    // Draw the focus (central body)
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 5 * zoom, 0, 2 * Math.PI);
+    ctx.fillStyle = "red";
+    ctx.fill();
+
+    // Calculate the position of the asteroid
+    const r_asteroid = a * (1 - e * e) / (1 + e * Math.cos(nu)); // Distance at the current true anomaly
+    const x_asteroid = r_asteroid * Math.cos(nu);
+    const y_asteroid = r_asteroid * Math.sin(nu);
+
+    // Rotate the asteroid position
+    const x_asteroid_rotated = (x_asteroid * Math.cos(w) - y_asteroid * Math.sin(w));
+    const y_asteroid_rotated = (x_asteroid * Math.sin(w) + y_asteroid * Math.cos(w)) * Math.cos(i);
+
+    // Draw the asteroid
+    ctx.beginPath();
+    ctx.arc(centerX + x_asteroid_rotated * 100 * zoom, centerY - y_asteroid_rotated * 100 * zoom, 3 * zoom, 0, 2 * Math.PI);
+    ctx.fillStyle = "green"; // Color of the asteroid
+    ctx.fill();
+}
+
+// Update the zoom display
+document.getElementById("zoom").addEventListener("input", function () {
+    document.getElementById("zoomValue").innerText = this.value + "%";
+    useData(); // Call useData to redraw when zoom changes
+});
+
+// Initial drawing of the orbits
+useData();
+
+// Update the orbit and asteroid position periodically
+setInterval(useData, 10); // Adjust as needed (e.g., every second)
+    
+
+
+</script>
+</body>
+</html>
